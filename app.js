@@ -2,6 +2,11 @@
 const fs = require("fs");
 const inquirer = require("inquirer");
 
+// Include class template for "Manager object", "Engineer object" and "Intern object"
+const Manager = require("./lib/Manager");
+const Engineer = require("./lib/Engineer");
+const Intern = require("./lib/Intern");
+
 // ------------------------------- CAPTURE USER INPUT (Inquirer module): Manager, Engineer, Intern --------------------------------
 // Variable: question list
 function managerInfo() {
