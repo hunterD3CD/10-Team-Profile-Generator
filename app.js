@@ -8,22 +8,21 @@ const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
 
 // ------------------------------- CAPTURE USER INPUT (Inquirer module): Manager, Engineer, Intern --------------------------------
-// Variable: question list
 function managerInfo() {
   inquirer
     .prompt([
       {
-        name: "name",
+        name: "managerName",
         type: "input",
         message: "what is manager's name?",
       },
       {
-        name: "id",
+        name: "managerId",
         type: "input",
         message: "what is manager's id?",
       },
       {
-        name: "email",
+        name: "managerEmail",
         type: "input",
         message: "please enter the email.",
       },
@@ -33,8 +32,15 @@ function managerInfo() {
         message: "please enter the office number.",
       },
     ])
-    .then((answer) => {
-      console.log(answer);
+    .then((managerInput) => {
+      // create a new object from class "blueprint - Manager", replace parameters with user input: name, id, email, officeNumber
+      let manager = new Manager(
+        managerInput.managerName,
+        managerInput.managerId,
+        managerInput.managerEmail,
+        managerInput.officeNumber
+      );
+      console.log(manager);
     });
 }
 managerInfo();
