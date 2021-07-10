@@ -1,0 +1,23 @@
+{
+  "name": "02-Challenge",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hunterD3CD/10-Team-Profile-Generator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hunterD3CD/10-Team-Profile-Generator/issues"
+  },
+  "homepage": "https://github.com/hunterD3CD/10-Team-Profile-Generator#readme",
+  "dependencies": {
+    "inquirer": "^8.1.1"
+  }
+}
