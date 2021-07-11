@@ -8,11 +8,7 @@ const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
 const Employee = require("./lib/Employee");
 
-var intern;
-var manager;
-var engineer;
-
-// ------------------------------- CAPTURE USER INPUT (Inquirer module): Manager  --------------------------------
+// ------------------------------- FUNCTION 1: CAPTURE USER INPUT (Inquirer module): Manager  --------------------------------
 function managerInfo() {
   inquirer
     .prompt([
@@ -55,7 +51,7 @@ function managerInfo() {
 }
 managerInfo();
 
-// ------------------------------- CAPTURE USER INPUT (Inquirer module): Engineer, Intern --------------------------------
+// ------------------------------- FUNCTION 2: CAPTURE USER INPUT (Inquirer module): Engineer, Intern --------------------------------
 function employeeInfo() {
   inquirer
     .prompt([
@@ -119,7 +115,54 @@ function employeeInfo() {
       if (employeeInput.addEmployee === true) {
         employeeInfo();
       } else {
-
+        generateHtml();
+        appendHtml();
       }
     });
 }
+
+// ------------------------------- FUNCTION 3: GENERATE HTML: fs module to create html, append html --------------------------------
+function generateHtml() {
+  const html = `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+      <title>Team Profile Generator</title>
+  </head>
+  <body>
+      <nav class="navbar navbar-light bg-light">
+          <span class="navbar-brand mb-0 h1">My Team</span>
+      </nav>
+      <div class="container">
+          <div class="row">
+          <h5 class="card-header">${Employee.getName()}<br /><br />Engineer</h5>
+          `;
+  fs.writeFile("./output/team.html", html, function (err) {
+    if (err) throw error;
+    console.log("the team html is generated");
+  });
+}
+
+// function appendHtml() {
+//   let data = "";
+//   if (Engineer.getRole() === "Engineer") {
+//     data = `<div class="col-6">
+//             <div class="card mx-auto mb-3" style="width: 18rem">
+//             <h5 class="card-header">${Employee.getName()}<br /><br />Engineer</h5>
+//             <ul class="list-group list-group-flush">
+//                 <li class="list-group-item">ID: ${Employee.getId()}</li>
+//                 <li class="list-group-item">Email Address: ${Employee.getEmail()}</li>
+//                 <li class="list-group-item">GitHub: ${Engineer.getGithub()}</li>
+//             </ul>
+//             </div>
+//         </div>`;
+//   }
+//   fs.appendFile("./output/team.html", data, function (err) {
+//     if (err) throw error;
+//     console.log("adding new employee");
+//   });
+// }
