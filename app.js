@@ -7,19 +7,11 @@ const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
 
-//===================================================================
-// Welcome to a team information HTML generator!
-//===================================================================
-
-// This array fills in with employee data.
-const teamMembers = [];
-// Manager will change-- can't be a const.
+// establish variables
+const teamNumber = [];
 let manager;
 
-//=========================================================
-// First, we prompt the user for the manager/project info.
-//=========================================================
-
+// ------------------------------- FUNCTION 1: CAPTURE USER INPUT (Inquirer module): Manager  --------------------------------
 function managerInfo() {
   inquirer
     .prompt([
@@ -109,7 +101,7 @@ function employeeInfo() {
           employeeInput.employeeEmail,
           employeeInput.internSchool
         );
-        teamMembers.push(employee);
+        teamNumber.push(employee);
       } else if (employeeInput.employeeRole === "Engineer") {
         const employee = new Engineer(
           employeeInput.employeeName,
@@ -117,7 +109,7 @@ function employeeInfo() {
           employeeInput.employeeEmail,
           employeeInput.github
         );
-        teamMembers.push(employee);
+        teamNumber.push(employee);
       }
       if (employeeInput.addEmployee === true) {
         console.log(
@@ -129,54 +121,63 @@ function employeeInfo() {
 
         var Central = fs.readFileSync("./Html/Central.html", "utf8");
 
-        //update manager html template
+        /////////////////////////////////////////////////////update manager html template
+        // /////////////////////////////////////////////////////////////////////////////
         var managerHtml = fs.readFileSync("./Html/Manager.html", "utf8");
-        managerHtml = managerHtml.replace("{{name}}", manager.getName());
-        managerHtml = managerHtml.replace("{{role}}", manager.getRole());
-        managerHtml = managerHtml.replace("{{id}}", manager.getId());
-        managerHtml = managerHtml.replace("{{email}}", manager.getEmail());
+        managerHtml = managerHtml.replace("#name", manager.getName());
+        managerHtml = managerHtml.replace("#role", manager.getRole());
+        managerHtml = managerHtml.replace("#id", manager.getId());
+        managerHtml = managerHtml.replace("#email", manager.getEmail());
         managerHtml = managerHtml.replace(
-          "{{officeNumber}}",
+          "#officeNumber",
           manager.getOfficeNumber()
         );
 
-        //=====================================================
-        // Append all of the team members after manager
-        //=====================================================
-
-        var cards = managerHtml;
-        for (var i = 0; i < teamMembers.length; i++) {
-          cards += renderEmployee(teamMembers[i]);
+        ///////////////////////////////////////////////////update employee html template
+        // /////////////////////////////////////////////////////////////////////////////
+        function employeeHtml(employee) {
+          if (employee.getRole() === "Intern") {
+            var internHtml = fs.readFileSync("./Html/Intern.html", "utf8");
+            internHtml = internHtml.replace("#name", employee.getName());
+            internHtml = internHtml.replace("#role", employee.getRole());
+            internHtml = internHtml.replace("#id", employee.getId());
+            internHtml = internHtml.replace("#email", employee.getEmail());
+            internHtml = internHtml.replace("#school}", employee.getSchool());
+            return internHtml;
+          } else if (employee.getRole() === "Engineer") {
+            var engineerHtml = fs.readFileSync("./Html/Engineer.html", "utf8");
+            engineerHtml = engineerHtml.replace("#name", employee.getName());
+            engineerHtml = engineerHtml.replace("#role", employee.getRole());
+            engineerHtml = engineerHtml.replace("#id", employee.getId());
+            engineerHtml = engineerHtml.replace("#email", employee.getEmail());
+            engineerHtml = engineerHtml.replace(
+              "#github",
+              employee.getGithub()
+            );
+            return engineerHtml;
+          }
         }
-        Central = Central.replace("{{cards}}", cards);
 
-        fs.writeFileSync("./output/team.html", Central);
+        ///////////////////////update the central html with manager html & employee html
+        // /////////////////////////////////////////////////////////////////////////////
 
-        console.log("---------------the team html is generated--------------");
+        var html = managerHtml;
+        for (var i = 0; i < teamNumber.length; i++) {
+          html += employeeHtml(teamNumber[i]);
+        }
+        Central = Central.replace("#html", html);
+
+        fs.writeFile("./output/team.html", Central, function (err) {
+          if (err) throw error;
+          console.log("the team html is generated");
+        });
+
+        console.log(
+          "---------------the team profile is generated--------------"
+        );
       }
     });
 }
 
-// renderEmployee function that is called above.
-
-function renderEmployee(employee) {
-  if (employee.getRole() === "Intern") {
-    var internCard = fs.readFileSync("./Html/Intern.html", "utf8");
-    internCard = internCard.replace("{{name}}", employee.getName());
-    internCard = internCard.replace("{{role}}", employee.getRole());
-    internCard = internCard.replace("{{id}}", employee.getId());
-    internCard = internCard.replace("{{email}}", employee.getEmail());
-    internCard = internCard.replace("{{school}}", employee.getSchool());
-    return internCard;
-  } else if (employee.getRole() === "Engineer") {
-    var engineerCard = fs.readFileSync("./Html/Engineer.html", "utf8");
-    engineerCard = engineerCard.replace("{{name}}", employee.getName());
-    engineerCard = engineerCard.replace("{{role}}", employee.getRole());
-    engineerCard = engineerCard.replace("{{id}}", employee.getId());
-    engineerCard = engineerCard.replace("{{email}}", employee.getEmail());
-    engineerCard = engineerCard.replace("{{github}}", employee.getGithub());
-    return engineerCard;
-  }
-}
-
+// -------------------------------RUN THE FUNCTIONS---------------------------------
 managerInfo();
