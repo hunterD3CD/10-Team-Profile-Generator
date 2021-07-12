@@ -6,9 +6,20 @@ const inquirer = require("inquirer");
 const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
-const Employee = require("./lib/Employee");
 
-// ------------------------------- FUNCTION 1: CAPTURE USER INPUT (Inquirer module): Manager  --------------------------------
+//===================================================================
+// Welcome to a team information HTML generator!
+//===================================================================
+
+// This array fills in with employee data.
+const teamMembers = [];
+// Manager will change-- can't be a const.
+let manager;
+
+//=========================================================
+// First, we prompt the user for the manager/project info.
+//=========================================================
+
 function managerInfo() {
   inquirer
     .prompt([
@@ -35,22 +46,18 @@ function managerInfo() {
     ])
     .then((managerInput) => {
       // create a new object from class "blueprint - Manager", replace parameters with user input: name, id, email, officeNumber
-      let manager = new Manager(
+      manager = new Manager(
         managerInput.managerName,
         managerInput.managerId,
         managerInput.managerEmail,
         managerInput.officeNumber
       );
       console.log(
-        "after entering manager info, please fill in employee's info"
+        "------------after entering manager info, please fill in employee's info-----------"
       );
-      console.log(manager);
-
       employeeInfo();
     });
 }
-managerInfo();
-
 // ------------------------------- FUNCTION 2: CAPTURE USER INPUT (Inquirer module): Engineer, Intern --------------------------------
 function employeeInfo() {
   inquirer
@@ -95,123 +102,81 @@ function employeeInfo() {
       },
     ])
     .then((employeeInput) => {
-      if (employeeInput.employeeRole === "Engineer") {
-        let engineer = new Engineer(
-          employeeInput.employeeName,
-          employeeInput.employeeId,
-          employeeInput.employeeEmail,
-          employeeInput.engineerGithub
-        );
-        console.log(engineer);
-      } else if (employeeInput.employeeRole === "Intern") {
-        let intern = new Intern(
+      if (employeeInput.employeeRole === "Intern") {
+        const employee = new Intern(
           employeeInput.employeeName,
           employeeInput.employeeId,
           employeeInput.employeeEmail,
           employeeInput.internSchool
         );
-        console.log(intern);
+        teamMembers.push(employee);
+      } else if (employeeInput.employeeRole === "Engineer") {
+        const employee = new Engineer(
+          employeeInput.employeeName,
+          employeeInput.employeeId,
+          employeeInput.employeeEmail,
+          employeeInput.github
+        );
+        teamMembers.push(employee);
       }
       if (employeeInput.addEmployee === true) {
+        console.log(
+          "------------adding more employee's information-----------"
+        );
         employeeInfo();
       } else {
-        generateTeam();
-        // appendHtml();
+        // ------------------------------- FUNCTION 3: GENERATE HTML: fs module to create html, append html --------------------------------
+
+        var Central = fs.readFileSync("./Html/Central.html", "utf8");
+
+        //update manager html template
+        var managerHtml = fs.readFileSync("./Html/Manager.html", "utf8");
+        managerHtml = managerHtml.replace("{{name}}", manager.getName());
+        managerHtml = managerHtml.replace("{{role}}", manager.getRole());
+        managerHtml = managerHtml.replace("{{id}}", manager.getId());
+        managerHtml = managerHtml.replace("{{email}}", manager.getEmail());
+        managerHtml = managerHtml.replace(
+          "{{officeNumber}}",
+          manager.getOfficeNumber()
+        );
+
+        //=====================================================
+        // Append all of the team members after manager
+        //=====================================================
+
+        var cards = managerHtml;
+        for (var i = 0; i < teamMembers.length; i++) {
+          cards += renderEmployee(teamMembers[i]);
+        }
+        Central = Central.replace("{{cards}}", cards);
+
+        fs.writeFileSync("./output/team.html", Central);
+
+        console.log("---------------the team html is generated--------------");
       }
     });
 }
 
-// ------------------------------- FUNCTION 3: GENERATE HTML: fs module to create html, append html --------------------------------
-const generateTeam = (team) => {
-  const generateEnginner = (engineer) => {
-    const html = `
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta http-equiv="X-UA-Compatible" content="ie=edge">
-      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-      <title>Team Profile Generator</title>
-  </head>
-  <body>
-      <nav class="navbar navbar-light bg-light">
-          <span class="navbar-brand mb-0 h1">My Team</span>
-      </nav>
-      <div class="container">
-          <div class="row">
-          <h5 class="card-header">${data.getName()}<br /><br />Engineer</h5>
-          </div>
-          </div>
-          </body>
-          </html>`;
-    fs.writeFile("./output/team.html", html, function (err) {
-      if (err) throw error;
-      console.log("the team html is generated");
-    });
-  };
+// renderEmployee function that is called above.
 
-  const data = [];
-  data.push(
-    team
-      .filter((employee) => employee.getRole() === "Engineer")
-      .map((engineer) => generateEnginner(engineer).join(""))
-  );
+function renderEmployee(employee) {
+  if (employee.getRole() === "Intern") {
+    var internCard = fs.readFileSync("./Html/Intern.html", "utf8");
+    internCard = internCard.replace("{{name}}", employee.getName());
+    internCard = internCard.replace("{{role}}", employee.getRole());
+    internCard = internCard.replace("{{id}}", employee.getId());
+    internCard = internCard.replace("{{email}}", employee.getEmail());
+    internCard = internCard.replace("{{school}}", employee.getSchool());
+    return internCard;
+  } else if (employee.getRole() === "Engineer") {
+    var engineerCard = fs.readFileSync("./Html/Engineer.html", "utf8");
+    engineerCard = engineerCard.replace("{{name}}", employee.getName());
+    engineerCard = engineerCard.replace("{{role}}", employee.getRole());
+    engineerCard = engineerCard.replace("{{id}}", employee.getId());
+    engineerCard = engineerCard.replace("{{email}}", employee.getEmail());
+    engineerCard = engineerCard.replace("{{github}}", employee.getGithub());
+    return engineerCard;
+  }
+}
 
-  return html.join("");
-};
-
-// function appendHtml() {
-//   let data = "";
-//   if (Engineer.getRole() === "Engineer") {
-//     data = `<div class="col-6">
-//             <div class="card mx-auto mb-3" style="width: 18rem">
-//             <h5 class="card-header">${Employee.getName()}<br /><br />Engineer</h5>
-//             <ul class="list-group list-group-flush">
-//                 <li class="list-group-item">ID: ${Employee.getId()}</li>
-//                 <li class="list-group-item">Email Address: ${Employee.getEmail()}</li>
-//                 <li class="list-group-item">GitHub: ${Engineer.getGithub()}</li>
-//             </ul>
-//             </div>
-//         </div>`;
-//   }
-//   fs.appendFile("./output/team.html", data, function (err) {
-//     if (err) throw error;
-//     console.log("adding new employee");
-//   });
-// }
-
-module.exports = (team) => {
-  return `
-    <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>My Team</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
-        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://kit.fontawesome.com/c502137733.js"></script>
-</head>
-<body>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12 jumbotron mb-3 team-heading">
-                <h1 class="text-center">My Team</h1>
-            </div>
-        </div>
-    </div>
-    <div class="container">
-        <div class="row">
-            <div class="team-area col-12 d-flex justify-content-center">
-                ${generateTeam(team)}
-                ${generateEnginner(engineer)}
-            </div>
-        </div>
-    </div>
-</body>
-</html>
-    `;
-};
+managerInfo();
