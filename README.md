@@ -11,10 +11,12 @@ A Team profile generator is used to collect and organize the manager data and em
 - Node(inquirer,fs module)
 
 # Demo: walkthrough video
-![demoGif](https://user-images.githubusercontent.com/82790906/125240240-b38cee80-e29e-11eb-8ed5-64e793f939b5.gif)
+link: 
+<iframe src="https://drive.google.com/file/d/1W2z6w-52jjmEcOiZLF72rH5kgiPQtQsN/preview" width="640" height="480"></iframe>
 
 # Image:
-![demoimage](https://user-images.githubusercontent.com/82790906/125240170-9a843d80-e29e-11eb-9e4e-d8bcd8718696.PNG)
+![demoimage](https://user-images.githubusercontent.com/82790906/125241920-edf78b00-e2a0-11eb-9f6a-562b5a63411b.PNG)
+
 
 # Contribution:
 
