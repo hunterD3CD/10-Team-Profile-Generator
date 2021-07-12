@@ -115,15 +115,16 @@ function employeeInfo() {
       if (employeeInput.addEmployee === true) {
         employeeInfo();
       } else {
-        generateHtml();
-        appendHtml();
+        generateTeam();
+        // appendHtml();
       }
     });
 }
 
 // ------------------------------- FUNCTION 3: GENERATE HTML: fs module to create html, append html --------------------------------
-function generateHtml() {
-  const html = `
+const generateTeam = (team) => {
+  const generateEnginner = (engineer) => {
+    const html = `
   <!DOCTYPE html>
   <html lang="en">
   <head>
@@ -139,13 +140,26 @@ function generateHtml() {
       </nav>
       <div class="container">
           <div class="row">
-          <h5 class="card-header">${Employee.getName()}<br /><br />Engineer</h5>
-          `;
-  fs.writeFile("./output/team.html", html, function (err) {
-    if (err) throw error;
-    console.log("the team html is generated");
-  });
-}
+          <h5 class="card-header">${data.getName()}<br /><br />Engineer</h5>
+          </div>
+          </div>
+          </body>
+          </html>`;
+    fs.writeFile("./output/team.html", html, function (err) {
+      if (err) throw error;
+      console.log("the team html is generated");
+    });
+  };
+
+  const data = [];
+  data.push(
+    team
+      .filter((employee) => employee.getRole() === "Engineer")
+      .map((engineer) => generateEnginner(engineer).join(""))
+  );
+
+  return html.join("");
+};
 
 // function appendHtml() {
 //   let data = "";
@@ -166,3 +180,38 @@ function generateHtml() {
 //     console.log("adding new employee");
 //   });
 // }
+
+module.exports = (team) => {
+  return `
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>My Team</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/c502137733.js"></script>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 jumbotron mb-3 team-heading">
+                <h1 class="text-center">My Team</h1>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="team-area col-12 d-flex justify-content-center">
+                ${generateTeam(team)}
+                ${generateEnginner(engineer)}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+    `;
+};
